@@ -1,0 +1,11 @@
+{
+  "kakaoAdminKey": "CHANGE_ME_KAKAO_ADMIN_KEY",
+  "adminToken": "CHANGE_ME_ADMIN_TOKEN",
+  "restApiKey": "CHANGE_ME_REST_API_KEY",
+  "clientSecret": "CHANGE_ME_CLIENT_SECRET",
+  "baseline": {
+    "date": "2026-09-30",
+    "friends": 738
+  },
+  "channelPublicId": "_xoLxifxj"
+}

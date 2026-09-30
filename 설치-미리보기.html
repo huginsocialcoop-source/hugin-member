@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>허그인 자동화 · 설치 전 미리보기</title>
+<style>
+:root{--paper:#F3F4EF;--surface:#fff;--ink:#233028;--soft:#5C6B61;--faint:#93A198;--pine:#2E6B4E;--deep:#1C3A2C;--tint:#E4EEE7;--amber:#E9A23B;--amber-t:#FBF1DE;--clay:#C4674A;--hair:rgba(35,48,40,.1);--serif:'Noto Serif KR','Nanum Myeongjo',serif;--sans:'Pretendard Variable',Pretendard,-apple-system,'Malgun Gothic',sans-serif}
+*{margin:0;box-sizing:border-box}body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6;padding:40px 20px}
+.wrap{max-width:880px;margin:0 auto}
+header{margin-bottom:28px}h1{font-family:var(--serif);font-size:30px;letter-spacing:-.5px}.sub{color:var(--soft);margin-top:6px}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:14px;padding:22px 24px;box-shadow:0 1px 2px rgba(35,48,40,.05),0 6px 20px rgba(35,48,40,.06);margin-bottom:16px}
+h2{font-family:var(--serif);font-size:19px;margin-bottom:12px}.eyebrow{font-size:11px;letter-spacing:1.6px;color:var(--pine);font-weight:700;text-transform:uppercase;display:block;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{padding:9px 10px;border-bottom:1px solid var(--hair);text-align:left}th{font-size:11.5px;color:var(--faint);letter-spacing:.5px}
+.tl{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid var(--hair)}
+.tl-item:last-child{border:0}.tl-time{font-family:var(--serif);font-weight:700;color:var(--pine);min-width:150px}
+.steps{counter-reset:st;display:grid;gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start}.step::before{counter-increment:st;content:counter(st);width:26px;height:26px;flex-shrink:0;border-radius:50%;background:var(--tint);color:var(--pine);font-family:var(--serif);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
+code,pre{font-family:Consolas,'Courier New',monospace}
+pre{background:var(--deep);color:#D9E4DC;border-radius:10px;padding:16px 18px;font-size:12.5px;overflow-x:auto;line-height:1.7;white-space:pre}
+pre .g{color:#8FD3AE}pre .y{color:#F0C060}pre .d{color:#7E9B8B}
+.note{background:var(--amber-t);border:1px solid rgba(233,162,59,.4);border-radius:10px;padding:12px 16px;font-size:13px;color:#7A5312;margin-top:10px}
+.danger{background:#F8E9E2;border-color:rgba(196,103,74,.4);color:#8A3B22}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}.tl-time{min-width:110px}}
+.chk{font-size:13px;line-height:1.8}.chk .ok{color:var(--pine);font-weight:700}.chk .w{color:#9A6A1B;font-weight:700}.chk .e{color:var(--clay);font-weight:700}
+footer{color:var(--faint);font-size:12px;margin-top:24px;text-align:center}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+  <h1>허그인 대시보드 · 설치 전 미리보기</h1>
+  <p class="sub">조합 PC에 설치되는 주간 자동화의 전체 모습입니다. <b>huggin-auto.zip</b> 압축 해제 → <b>kakao-sync\setup-windows.bat</b> 실행 한 번으로 아래 상태가 됩니다.</p>
+</header>
+
+<div class="card">
+  <span class="eyebrow">Schedule</span><h2>매주 목요일 — 이렇게 돌아갑니다</h2>
+  <div class="tl">
+    <div class="tl-item"><div class="tl-time">목 17:00</div><div><b>카카오 채널 통계 수집</b><br><span style="color:var(--soft);font-size:13px">파트너센터에 저장된 세션으로 친구 통계 리포트 자동 다운로드 → 수집기 집계 → 대시보드 반영</span></div></div>
+    <div class="tl-item"><div class="tl-time">목 17:30</div><div><b>해피나눔 조합원 수집</b><br><span style="color:var(--soft);font-size:13px">해피나눔 자동 로그인 → 조합원 전체 파일 다운로드 → 연령·성별·지역·증감 자동 집계 → 반영</span></div></div>
+    <div class="tl-item"><div class="tl-time">PC 꺼짐 보정</div><div><b>놓친 예약은 다음 켜짐 즉시 실행</b><br><span style="color:var(--soft);font-size:13px">목요일에 PC가 꺼져 있어도, 다음에 켜지는 순간 두 수집이 순서대로 자동 실행됩니다 (StartWhenAvailable)</span></div></div>
+    <div class="tl-item"><div class="tl-time">상시</div><div><b>수집기 서버 상주</b><br><span style="color:var(--soft);font-size:13px">부팅/로그온 시 자동 시작 — 브라우저에서 <code>http://localhost:8787</code> 로 항상 최신 대시보드 확인</span></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <span class="eyebrow">Setup</span><h2>설치 절차 (setup-windows.bat가 전부 자동)</h2>
+  <div class="steps">
+    <div class="step"><div><b>huggin-auto.zip 압축 해제</b> — 예: <code>C:\huggin</code> (Node.js 미설치 시 nodejs.org LTS 먼저 설치)</div></div>
+    <div class="step"><div><b>해피나눔 자격 증명 입력</b> — 설치 중 입력창이 뜨면 아이디·비밀번호 입력. <code>data\nanum-credentials.json</code>에만 저장되고 이후 매주 무인 로그인에 사용</div></div>
+    <div class="step"><div><b>파트너센터 로그인 1회</b> — Chrome 창이 열리면 로그인(기기 인증 포함). 세션이 <code>.kakao-profile\</code>에 저장되어 이후 무인</div></div>
+    <div class="step"><div><b>예약 등록</b> — 목 17:00 카카오 / 목 17:30 해피나눔 / 부팅 시 수집기 — 3건이 Windows 작업 스케줄러에 등록됨</div></div>
+  </div>
+</div>
+
+<div class="grid2">
+<div class="card">
+  <span class="eyebrow">Check</span><h2>점검 스크립트 (신규)</h2>
+  <p style="font-size:13px;color:var(--soft)">예약이 실제로 실행됐는지 확인하려면 명령창에서:</p>
+  <pre style="margin-top:8px">node check-status.js</pre>
+  <p style="font-size:13px;color:var(--soft);margin-top:8px">출력 예시 (PC 설치 후 정상 상태):</p>
+  <pre><span class="g">✔</span> 카카오 채널 (목 17:00): 예약 있음 · 마지막 결과 코드 0(성공)
+<span class="g">✔</span> 해피나눔 (목 17:30): 예약 있음 · 마지막 결과 코드 0(성공)
+<span class="g">✔</span> 수집기 정상 · 채널 친구 738명 · 일별 90일치
+<span class="g">✔</span> 카카오 리포트 마지막 반영: 2026. 10. 1. 17:00 (90일치)
+<span class="g">✔</span> 조합원 파일 반영: 총 1,248명
+<span class="g">✔</span> 해피나눔 자격 증명 저장됨
+<span class="d">⚠ 웹훅 미연결 — 주간 리포트 방식으로 운영 중</span></pre>
+</div>
+<div class="card">
+  <span class="eyebrow">Trouble</span><h2>자주 묻는 문제</h2>
+  <table><tbody>
+    <tr><td><b>npm 설치 실패</b></td><td>인터넷 연결·사내 방화벽 확인 후 재실행</td></tr>
+    <tr><td><b>Chrome 창 안 열림</b></td><td>Chrome 설치 확인. 특수 경로면 <code>CHROME_PATH</code> 지정</td></tr>
+    <tr><td><b>해피나눔 로그인 실패</b></td><td>비밀번호 변경했는지 확인 — <code>node nanum-auto.js</code> 재실행으로 재입력</td></tr>
+    <tr><td><b>화면 개편으로 수집 실패</b></td><td><code>node kakao-channel-auto.js --debug</code> → 생성된 캡처 파일 공유</td></tr>
+    <tr><td><b>예약이 실행 안 된 듯함</b></td><td><code>node check-status.js</code> 의 "마지막 결과 코드" 확인 — 0이면 성공</td></tr>
+  </tbody></table>
+</div>
+</div>
+
+<div class="card">
+  <span class="eyebrow">Security</span><h2>보안 유의</h2>
+  <div class="note danger"><b>자격 증명 파일 취급</b> — <code>data\nanum-credentials.json</code>(해피나눔)과 <code>.kakao-profile\</code>(파트너센터 세션)은 이 PC에만 존재해야 합니다. 이메일·공유폴더·채팅으로 전송 금지. 해피나눔 비밀번호를 변경하면 <code>node nanum-auto.js</code> 재실행으로 새 값만 입력하면 됩니다.</div>
+</div>
+
+<div class="card">
+  <span class="eyebrow">Preview</span><h2>대시보드 미리보기</h2>
+  <p style="font-size:14px">같은 폴더의 <code>huggin-dashboard.html</code>을 브라우저로 열면 대시보드 모양을 볼 수 있습니다 — <b>설치 전에는 수치가 샘플</b>로 표시됩니다. 실데이터가 채워진 화면은 설치 완료 후 <code>http://localhost:8787</code> 에서 확인하세요.</p>
+  <div class="note">설치 직후 1회: 관리 페이지(<code>http://localhost:8787/admin</code>)에서 현재 친구 수(738)와 리포트 파일을 올리면 기존 90일 추이가 이어집니다. 첫 목요일(10/1) 17:00 자동 수집부터는 전부 자동입니다.</div>
+</div>
+
+<footer>허그인사회적협동조합 운영 대시보드 · 설치 전 미리보기 — 2026-09-30 기준</footer>
+</div></body></html>
