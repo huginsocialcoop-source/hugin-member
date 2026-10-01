@@ -577,7 +577,7 @@ table.data .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px
    ════════════════════════════════════════════════════════════════ */
 const DATA = {
  "asOf": "2026-09-29",
- "builtAt": "2026-10-01T07:47:27.604Z",
+ "builtAt": "2026-10-01T08:02:52.577Z",
  "goal": {
   "year": 2026,
   "target": 1300
@@ -1488,7 +1488,7 @@ const DATA = {
    ]
   ]
  }
-};;;;;;;;
+};;;;;;;;;
 
 /* ── 유틸 ── */
 const nf = n => n.toLocaleString('ko-KR');
@@ -2171,7 +2171,7 @@ function manualPick(scope) {
     if (!same) { showToast('정적 페이지에는 직접 반영이 안 됩니다 — 조합 PC 대시보드(localhost:8787)에서 올려주세요.', true); return; }
     let key = ''; try { key = (typeof KEY !== 'undefined' && KEY) ? KEY : (localStorage.getItem('huggin-admin-key') || ''); } catch (e) {}
     const bin = new Uint8Array(await f.arrayBuffer()); let b64 = '';
-    for (let i = 0; i < bin.length; i += 8192) b64 += btoa(String.fromCharCode(...bin.subarray(i, i + 8192))).replace(//g, '');
+    for (let i = 0; i < bin.length; i += 8192) b64 += btoa(String.fromCharCode(...bin.subarray(i, i + 8192))).replace(/\r/g, '');
     const ep = scope === 'members' ? '/api/members/import' : '/api/kakao/extra';
     try {
       let r = await fetch(same + ep, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(key ? { 'X-Admin-Key': key } : {}) }, body: JSON.stringify({ name: f.name, dataBase64: b64 }) });
