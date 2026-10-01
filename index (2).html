@@ -314,6 +314,7 @@ table.data .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px
         <span class="hint">지난달 같은 기간 대비</span>
       </div>
       <div class="kpi-grid" id="main-kpis"></div>
+      <p class="hint" id="main-autosum" style="margin-top:10px"></p>
 
       <div class="section-title">
         <span class="eyebrow">Signature</span><h2>2026년 조합원 목표</h2>
@@ -362,7 +363,7 @@ table.data .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px
       <div class="page-head">
         <div>
           <h1 class="page-title">카카오 채널 현황</h1>
-          <p class="page-desc">카카오 비즈니스 관리자 기준 친구 추이와 채널 활동 인사이트입니다.</p>
+          <p class="page-desc">카카오 비즈니스 관리자 기준 친구 추이와 채널 활동 인사이트입니다. <button id="btn-collect-kakao" onclick="startCollect('kakao')" style="margin-left:10px;padding:5px 14px;border-radius:8px;border:0;background:var(--pine);color:#fff;font:inherit;font-size:13px;cursor:pointer">지금 업데이트</button><span class="collect-state" style="font-weight:600"></span></p>
         </div>
         <div class="head-right">
           <div class="seg" role="tablist" aria-label="조회 기간">
@@ -512,7 +513,7 @@ table.data .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px
       <div class="page-head">
         <div>
           <h1 class="page-title">조합원 분석</h1>
-          <p class="page-desc">조합원 증감 흐름과 연령대·성별 구성, 가입 경로 분석입니다.</p>
+          <p class="page-desc">조합원 증감 흐름과 연령대·성별 구성, 가입 경로 분석입니다. <button id="btn-collect-members" onclick="startCollect('members')" style="margin-left:10px;padding:5px 14px;border-radius:8px;border:0;background:var(--pine);color:#fff;font:inherit;font-size:13px;cursor:pointer">지금 업데이트</button><span class="collect-state" style="font-weight:600"></span></p>
         </div>
         <div class="head-right">
           <span class="date-chip">기준 <b data-bind="asOf"></b></span>
@@ -576,6 +577,7 @@ table.data .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px
    ════════════════════════════════════════════════════════════════ */
 const DATA = {
  "asOf": "2026-09-29",
+ "builtAt": "2026-10-01T07:13:45.281Z",
  "goal": {
   "year": 2026,
   "target": 1300
@@ -1486,7 +1488,7 @@ const DATA = {
    ]
   ]
  }
-};;;
+};;;;;
 
 /* ── 유틸 ── */
 const nf = n => n.toLocaleString('ko-KR');
@@ -1772,6 +1774,14 @@ function renderMain() {
     kpiHTML({ label: '카카오 채널 친구', num: nf(K.friends), unit: '명', delta: `주간 ${wkNet >= 0 ? '+' : ''}${nf(wkNet)}명`, dir: 'up', base: '채널 현황', accent: '#E9A23B' }) +
     kpiHTML({ label: '이번 달 신규 가입', num: nf(last[1]), unit: '명', delta: `${last[1] - prev[1] >= 0 ? '+' : ''}${last[1] - prev[1]}명`, dir: 'up', base: '지난달 대비', accent: '#93B0A0' }) +
     kpiHTML({ label: '메시지 평균 클릭률', num: ctr || '—', unit: ctr ? '%' : '', delta: msgs.length ? `발송 ${nf(sent)} · 클릭 ${nf(clicks)}` : '메시지 통계 업로드 대기', dir: 'flat', accent: '#C4674A' });
+
+  /* 메인 자동 요약 — 데이터가 바뀌면 이 문장도 함께 다시 계산 */
+  const updT = DATA.builtAt ? new Date(DATA.builtAt) : null;
+  const updTxt = updT && !isNaN(updT) ? ' · 마지막 갱신 ' + updT.toLocaleString('ko-KR', { hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  const gRow = M.gender.find(r => /여성/.test(r[0]));
+  const gTxt = genderTotal ? `성별(이름 예측) 여성 ${Math.round((gRow ? gRow[1] : 0) / genderTotal * 100)}%` : '성별 미수집';
+  const as = $('main-autosum');
+  if (as) as.innerHTML = `📍 데이터 기준 <b>${DATA.asOf}</b> — 친구 <b>${nf(K.friends)}명</b>(${wkTxt}) · 조합원 <b>${nf(TOTAL)}명</b>(이번 달 신규 ${nf(last[1])}명 · 목표 ${goalPct}%) · ${gTxt}${updTxt}`;
 
   chartRing('ring-goal', goalPct, TOTAL, DATA.goal.target);
 
@@ -2140,6 +2150,39 @@ renderDemo();
 renderGrowth();
 renderReport();
 renderVisit();
+/* ── 지금 업데이트: 수집기 즉시 실행 → 완료 후 화면 자동 새로고침 ── */
+let collectPoll = null, collectBase = null;
+const collectState = (t, err) => document.querySelectorAll('.collect-state').forEach(s => { s.textContent = t ? ' ' + t : ''; s.style.color = err ? '#C4674A' : 'var(--pine)'; });
+async function startCollect(scope) {
+  const btn = $(scope === 'members' ? 'btn-collect-members' : 'btn-collect-kakao');
+  let key = ''; try { key = (typeof KEY !== 'undefined' && KEY) ? KEY : (localStorage.getItem('huggin-admin-key') || ''); } catch (e) {}
+  const bases = [collectBase, (typeof API_BASE !== 'undefined' ? API_BASE : ''), 'http://localhost:8787'].filter(Boolean);
+  let accepted = null, lastErr = null;
+  for (const base of bases) {
+    try {
+      const r = await fetch(base.replace(/\/+$/, '') + '/api/collect', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(key ? { 'X-Admin-Key': key } : {}) }, body: JSON.stringify({ scope, publish: true }) });
+      if (r.status === 401) { const k = prompt('수집기 관리자 키를 입력하세요 (관리 페이지와 동일)'); if (!k) return; try { localStorage.setItem('huggin-admin-key', k); } catch (e) {} return startCollect(scope); }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      accepted = base; break;
+    } catch (e) { lastErr = e; }
+  }
+  if (!accepted) { collectState('수집기에 연결하지 못했습니다 — 공개 페이지는 매주 목 18:00 자동 갱신, 즉시 갱신은 조합 PC 대시보드(localhost:8787)에서 이 버튼을 눌러주세요.', true); return; }
+  collectBase = accepted;
+  if (btn) { btn.disabled = true; btn.textContent = '수집 중…'; }
+  collectState('수집 실행 중 — 수 분 소요됩니다');
+  clearInterval(collectPoll);
+  collectPoll = setInterval(async () => {
+    try {
+      const s = await (await fetch(collectBase.replace(/\/+$/, '') + '/api/collect/status')).json();
+      if (s.running) { const cur = (s.steps || []).filter(x => x.status === '실행중').slice(-1)[0]; if (cur) collectState('진행 중: ' + cur.name); return; }
+      clearInterval(collectPoll);
+      if (btn) { btn.disabled = false; btn.textContent = '지금 업데이트'; }
+      if (s.ok) { collectState('✔ ' + new Date(s.finishedAt).toLocaleTimeString('ko-KR', { hour12: false }) + ' 갱신 완료 — 화면을 새로 불러옵니다'); loadLiveKakao(); loadLiveMembers(); setTimeout(() => collectState(''), 9000); }
+      else collectState('일부 단계 실패: ' + ((s.steps || []).filter(x => x.status === '실패').map(x => x.name).join(', ') || '알 수 없음') + ' — ' + ((s.steps || []).find(x => x.detail) || {}).detail, true);
+    } catch (e) { clearInterval(collectPoll); if (btn) { btn.disabled = false; btn.textContent = '지금 업데이트'; } collectState('상태 확인 실패', true); }
+  }, 5000);
+}
+
 loadLiveKakao();
 loadLiveMembers();
 const qPage = new URLSearchParams(location.search).get('page');
