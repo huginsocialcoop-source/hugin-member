@@ -577,7 +577,7 @@ table.data .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px
    ════════════════════════════════════════════════════════════════ */
 const DATA = {
  "asOf": "2026-09-29",
- "builtAt": "2026-10-01T07:13:45.244Z",
+ "builtAt": "2026-10-01T07:30:17.447Z",
  "goal": {
   "year": 2026,
   "target": 1300
@@ -1488,7 +1488,7 @@ const DATA = {
    ]
   ]
  }
-};;;;
+};;;;;;;
 
 /* ── 유틸 ── */
 const nf = n => n.toLocaleString('ko-KR');
@@ -1780,6 +1780,7 @@ function renderMain() {
   const updTxt = updT && !isNaN(updT) ? ' · 마지막 갱신 ' + updT.toLocaleString('ko-KR', { hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
   const gRow = M.gender.find(r => /여성/.test(r[0]));
   const gTxt = genderTotal ? `성별(이름 예측) 여성 ${Math.round((gRow ? gRow[1] : 0) / genderTotal * 100)}%` : '성별 미수집';
+  const wkTxt = `주간 ${wkNet >= 0 ? '+' : ''}${nf(wkNet)}명`;
   const as = $('main-autosum');
   if (as) as.innerHTML = `📍 데이터 기준 <b>${DATA.asOf}</b> — 친구 <b>${nf(K.friends)}명</b>(${wkTxt}) · 조합원 <b>${nf(TOTAL)}명</b>(이번 달 신규 ${nf(last[1])}명 · 목표 ${goalPct}%) · ${gTxt}${updTxt}`;
 
@@ -2156,7 +2157,8 @@ const collectState = (t, err) => document.querySelectorAll('.collect-state').for
 async function startCollect(scope) {
   const btn = $(scope === 'members' ? 'btn-collect-members' : 'btn-collect-kakao');
   let key = ''; try { key = (typeof KEY !== 'undefined' && KEY) ? KEY : (localStorage.getItem('huggin-admin-key') || ''); } catch (e) {}
-  const bases = [collectBase, (typeof API_BASE !== 'undefined' ? API_BASE : ''), 'http://localhost:8787'].filter(Boolean);
+  const same = location.protocol.startsWith('http') ? location.origin : '';
+  const bases = [...new Set([collectBase, same, (typeof API_BASE !== 'undefined' && API_BASE) || '', 'http://localhost:8787'].filter(Boolean))];
   let accepted = null, lastErr = null;
   for (const base of bases) {
     try {
@@ -2182,6 +2184,9 @@ async function startCollect(scope) {
     } catch (e) { clearInterval(collectPoll); if (btn) { btn.disabled = false; btn.textContent = '지금 업데이트'; } collectState('상태 확인 실패', true); }
   }, 5000);
 }
+
+/* 로컬 미리보기 표시 — 파일로 직접 열었을 때만 배지가 바뀜 (GitHub 반영 전 확인용) */
+try { if (location.protocol === 'file:') { const b = document.querySelector('.badge-sample'); if (b) b.innerHTML = '<span class="dot"></span>로컬 미리보기 — 이 화면 그대로 GitHub에 반영됩니다'; } } catch (e) {}
 
 loadLiveKakao();
 loadLiveMembers();
